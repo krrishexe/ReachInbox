@@ -1,4 +1,5 @@
-const createConfig = (url :string, accessToken:any) => {
+
+const createConfig = (url: string, accessToken: any) => {
     return {
         method: 'GET',
         url: url.toString(),
@@ -9,4 +10,6 @@ const createConfig = (url :string, accessToken:any) => {
 
     }
 }
+
+
 module.exports = { createConfig };
