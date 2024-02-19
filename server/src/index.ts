@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 require('dotenv').config()
 const { createConfig } = require('./helpers/utils')
+const {router} = require('./routes/messageRoutes')
 
 
 const { google } = require('googleapis');
@@ -13,12 +14,7 @@ const nodemailer = require('nodemailer');
 // const REFRESH_TOKEN = '1//04MikI16ftRGrCgYIARAAGAQSNwF-L9IrccGkBefflr6naJ2ekitGULHHKfczj767qFQ2BpDrUiukHGEASaPb8ZErEhyrJZKUKhc';
 
 
-// const oAuth2Client = new google.auth.OAuth2({
-//     clientId: CLIENT_ID,
-//     clientSecret: CLIENT_SECRET,
-//     redirectUri: REDIRECT_URI,
-// })
-// oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
+
 
 
 // async function sendMail() {
@@ -53,6 +49,7 @@ const nodemailer = require('nodemailer');
 
 // sendMail().then(result => console.log('Email sent...', result)).catch(error => console.log(error.message))
 
+app.use('/api/mail',router)
 
 app.get('/', async (req:any, res:any) => {
     return res.json({ message: 'Hello World' })
