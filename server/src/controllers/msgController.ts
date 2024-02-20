@@ -78,9 +78,9 @@ const getMails = async (req: any, res: any) => {
     }
 }
 
-const sendMail = async (req: any, res: any, data:any) => {
+const sendMail = async (req: any, res: any, data: any) => {
     try {
-        console.log("data : ",data)
+        console.log("data : ", data)
         const { token } = await oAuth2Client.getAccessToken();
         const transport = nodemailer.createTransport({
             service: 'gmail',
@@ -102,10 +102,61 @@ const sendMail = async (req: any, res: any, data:any) => {
         }
         mailOptions.from = data.from;
         mailOptions.to = data.to;
-        mailOptions.text = `User is : ${data.label}`;
-        mailOptions.html = `<h1>User is : ${data.label}</h1>`;
-        
-        if(data.label === 'Interested'){
+
+
+        if (data.label === 'Interested') {
+            const response = await openai.chat.completions.create({
+                model: "gpt-3.5-turbo-0301",
+                max_tokens: 60,
+                temperature: 0.5,
+                messages: [{
+                    role: "user", content: `If the email mentions they are interested to know more, your reply should ask them if they are willing to hop on to a demo call by suggesting a time.
+                    write a small text on above request in around 50 -70 words`
+                }],
+
+            });
+            console.log(response.choices[0])
+            mailOptions.subject = `User is : ${data.label}`
+            mailOptions.text = `${response.choices[0].message.content}`;
+            mailOptions.html = `<p>${response.choices[0].message.content}</p>
+                                <img src="" alt="reachinbox">`;
+            const result = await transport.sendMail(mailOptions)
+            res.send(result)
+        } else if (data.label === 'Not Interested') {
+            const response = await openai.chat.completions.create({
+                model: "gpt-3.5-turbo-0301",
+                max_tokens: 60,
+                temperature: 0.5,
+                messages: [{
+                    role: "user", content: `If the email mentions they are not interested, your reply should ask them for feedback on why they are not interested.
+                    write a small text on above request in around 50 -70 words`
+                }],
+
+            });
+            console.log(response.choices[0])
+            mailOptions.subject = `User is : ${data.label}`
+            mailOptions.text = `${response.choices[0].message.content}`;
+            mailOptions.html = `<p>${response.choices[0].message.content}</p>
+            <img src="" alt="reachinbox">`;
+            const result = await transport.sendMail(mailOptions)
+            res.send(result)
+        }
+        else if (data.label === 'More information') {
+            const response = await openai.chat.completions.create({
+                model: "gpt-3.5-turbo-0301",
+                max_tokens: 60,
+                temperature: 0.5,
+                messages: [{
+                    role: "user", content: `If the email mentions they are interested to know more, your reply should ask them if they can give some more information whether thery are interested or not as its not clear from their previous mail.
+                    write a small text on above request in around 70-80 words`
+                }],
+
+            });
+            console.log(response.choices[0])
+            mailOptions.subject = `User wants : ${data.label}`
+            mailOptions.text = `${response.choices[0].message.content}`;
+            mailOptions.html = `<p>${response.choices[0].message.content}</p>
+            <img src="" alt="reachinbox">`;
             const result = await transport.sendMail(mailOptions)
             res.send(result)
         }
@@ -118,7 +169,7 @@ const sendMail = async (req: any, res: any, data:any) => {
 const parseAndSendMail = async (req: any, res: any) => {
     try {
         console.log("body is :", req.body)
-        const {from , to} = req.body;
+        const { from, to } = req.body;
         const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
         const message = await gmail.users.messages.get({
             userId: 'me',
@@ -177,9 +228,9 @@ const parseAndSendMail = async (req: any, res: any) => {
                 label = 'Not Sure';
         }
 
-        const data = { subject, textContent, snippet: message.data.snippet, label,from ,to}
+        const data = { subject, textContent, snippet: message.data.snippet, label, from, to }
         // console.log(data)
-        sendMail(req,res,data);
+        sendMail(req, res, data);
 
         // res.send({ subject, textContent, snippet: message.data.snippet, label });
     } catch (error: any) {
