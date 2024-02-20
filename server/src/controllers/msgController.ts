@@ -1,10 +1,14 @@
 import axios from 'axios';
+
 const { createConfig } = require('../helpers/utils')
 const { google } = require('googleapis');
 const nodemailer = require('nodemailer');
 const constants = require('../constants')
 require('dotenv').config()
 import OpenAI from 'openai';
+
+
+
 
 const oAuth2Client = new google.auth.OAuth2({
     clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -31,34 +35,6 @@ const getUser = async (req: any, res: any) => {
     } catch (error: any) {
         console.log("Cant send email ", error.message)
         res.send(error.message)
-    }
-}
-
-const sendMail = async (req: any, res: any) => {
-    try {
-        const { token } = await oAuth2Client.getAccessToken();
-        const transport = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                ...constants.auth,
-                accessToken: token,
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        })
-
-        const mailOptions = {
-            ...constants.mailOptions,
-            //to: req.body.to ? req.body.to : "krish.12018275@lpu.in",    // Enter the email address of the recipient
-            //text: req.body.text ? req.body.text : "This is a test mail.",
-
-        };
-        const result = await transport.sendMail(mailOptions)
-        res.send(result)
-
-    } catch (error: any) {
-        console.log("Cant send email ", error.message)
     }
 }
 
@@ -102,8 +78,47 @@ const getMails = async (req: any, res: any) => {
     }
 }
 
-const parseMail = async (req: any, res: any) => {
+const sendMail = async (req: any, res: any, data:any) => {
     try {
+        console.log("data : ",data)
+        const { token } = await oAuth2Client.getAccessToken();
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                ...constants.auth,
+                accessToken: token,
+            },
+            tls: {
+                rejectUnauthorized: false
+            }
+        })
+
+        const mailOptions = {
+            from: 'Krish Yadav 📩 <aryan.yadav.9889@gmail.com>',
+            to: 'krish.12018275@lpu.in',
+            subject: 'Hello from gmail API using NodeJS',
+            text: 'Hello from gmail email using API',
+            html: '<h1>Hello from gmail email using API</h1>'
+        }
+        mailOptions.from = data.from;
+        mailOptions.to = data.to;
+        mailOptions.text = `User is : ${data.label}`;
+        mailOptions.html = `<h1>User is : ${data.label}</h1>`;
+        
+        if(data.label === 'Interested'){
+            const result = await transport.sendMail(mailOptions)
+            res.send(result)
+        }
+
+    } catch (error: any) {
+        console.log("Cant send email ", error.message)
+    }
+}
+
+const parseAndSendMail = async (req: any, res: any) => {
+    try {
+        console.log("body is :", req.body)
+        const {from , to} = req.body;
         const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
         const message = await gmail.users.messages.get({
             userId: 'me',
@@ -141,7 +156,7 @@ const parseMail = async (req: any, res: any) => {
 
         });
 
-        console.log(response.choices[0]);
+        // console.log(response.choices[0]);
 
         // Map the model output to one of the labels
         const prediction: any = response.choices[0]?.message.content!;
@@ -155,23 +170,24 @@ const parseMail = async (req: any, res: any) => {
             case 'Not Interested':
                 label = 'Not Interested';
                 break;
-            case 'More information':
+            case 'More information.':
                 label = 'More information';
                 break;
             default:
                 label = 'Not Sure';
         }
 
-        const data = { subject, textContent, snippet: message.data.snippet, label }
-        console.log(data)
+        const data = { subject, textContent, snippet: message.data.snippet, label,from ,to}
+        // console.log(data)
+        sendMail(req,res,data);
 
-        res.send({ subject, textContent, snippet: message.data.snippet, label });
+        // res.send({ subject, textContent, snippet: message.data.snippet, label });
     } catch (error: any) {
         console.log("Can't fetch email ", error.message);
         res.send(error.message);
     }
 }
 
-module.exports = { getUser, sendMail, getDrafts, readMail, getMails, parseMail }
+module.exports = { getUser, sendMail, getDrafts, readMail, getMails, parseAndSendMail }
 
 export { }
