@@ -100,5 +100,5 @@
   },
   "include": [
     "src/**/*"
-  ]
+, "src/worker.ts"  ]
 }
