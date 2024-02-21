@@ -36,7 +36,7 @@ const oAuth2Client = new google.auth.OAuth2({
 })
 oAuth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN! })
 
-const openai = new OpenAI({ apiKey: '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' });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_SECRECT_KEY! });
 
 
 

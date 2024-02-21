@@ -40,3 +40,30 @@ nodemon src/worker.ts
 - Google APIs
 - Axios
 - bullMQ
+
+## API Endpoints
+
+For Google's OAuth2.0:
+
+- `/api/mail/user/:email` - GET request to send an email
+- `/api/mail/drafts/:email` - GET request to view drafts mail.
+- `/api/mail/drafts/:email` - GET request to view drafts mail.
+- `api/mail/read/:email/message/:message` - GET request to read a specific email(using id).
+- `api/mail/list/:email` - GET request to get a list of top 10 mails.
+- `api/mail/list/:email` - GET request to get a list of top 10 mails.
+- `api/mail/readdata/:id` - POST request to send a single mail for particular ID. 
+*format* : 
+```json
+{
+    "from":"sendersmail@gmail.com",
+    "to":"recieversmail@gmail.com"
+}
+```
+- `api/mail/sendmulti/:id` - POST request to send multiple mails to multiple users simulataneously for particular ID.
+*format* : 
+```json
+{
+    "from":"sendersmail@gmail.com",
+    "to":["recieversmail1@gmail.com","recieversmail2@gmail.com","recieversmail3@gmail.com" ...]
+}
+```
