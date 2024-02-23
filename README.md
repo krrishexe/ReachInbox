@@ -32,6 +32,11 @@ npm start
 ```bash
 nodemon src/worker.ts
 ```
+
+3. To start the redis server, run the following command in your terminal
+```bash
+docker run -itd -p 6379:6379 redis
+```
 # Built with
 - Node.js
 - Express.js
