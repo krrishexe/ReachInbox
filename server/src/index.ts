@@ -6,7 +6,7 @@ const app = express();
 require('dotenv').config()
 import router from "./routes/messageRoutes"
 const { outlookRouter } = require('./routes/outlookRoutes')
-const {getMails} = require('./controllers/msgController')
+
 
 app.use(bodyParser.json());
 app.use(cors());

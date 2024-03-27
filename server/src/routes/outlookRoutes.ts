@@ -8,6 +8,7 @@ const {
     getAccessTokenFromOutlook
 } = require('../controllers/outlookController')
 
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -20,7 +21,6 @@ outlookRouter.get('/signin', signInOutlook)
 outlookRouter.get('/', handleAuthorization)
 outlookRouter.get('/get-access-token', getAccessTokenFromOutlook)
 outlookRouter.get('/get-mails/:num', getMailsFromOutlook)
-
 
 module.exports = {outlookRouter}
 

@@ -14,7 +14,7 @@ oAuth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN! }
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_SECRECT_KEY! });
 
-let hardCodedReply = true;
+let hardCodedReply = false;
 const sendMail = async (data: any) => {
   try {
     // console.log("data : ", data)
@@ -350,7 +350,7 @@ const parseAndSendMail = async (data1: any) => {
 const sendEmail = (data: any,jobID:any) => new Promise(async (req, res) => {
   let helo = await parseAndSendMail(data)
   if(helo){
-    console.log(`Job ${jobID} completed and sent to ${data.to}`);
+    console.log(`Job completed and sent to ${data.to}`);
   }
   
   // console.log(helo)

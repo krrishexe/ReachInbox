@@ -6,9 +6,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const clientId: any = "f18603d7-b382-48ef-9740-6a935fedeb35"; // Your Azure app's client ID
-const clientSecret: any = "cPM8Q~.IC2w68yL445R1qvzIt3rh3x85U8La6ckk"; // Your Azure app's client secret
-const tenantId: any = "e14e73eb-5251-4388-8d67-8f9f2e2d5a46"; // Your Azure app's tenant ID
+const clientId: any = process.env.AZURE_CLIENT_ID!; // Your Azure app's client ID
+const clientSecret: any = process.env.AZURE_CLIENT_SECRET!; // Your Azure app's client secret
+const tenantId: any = process.env.AZURE_TENANT_ID!; // Your Azure app's tenant ID
 const redirectUri: any = "http://localhost:5000";
 const scopes = ["https://graph.microsoft.com/.default"];
 
