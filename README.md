@@ -45,6 +45,7 @@ docker run -itd -p 6379:6379 redis
 - Google APIs
 - Axios
 - bullMQ
+- Zod (for validation)
 
 ## API Endpoints
 

@@ -6,7 +6,29 @@ const constants = require('../constants')
 require('dotenv').config()
 import OpenAI from 'openai';
 const { Queue } = require("bullmq");
+import { z } from 'zod'
 
+
+// zod Schema for backend validation
+const initSchema = z.object({
+    from: z.string(),
+    to: z.string(),
+    id: z.string()
+})
+
+const sendMailViaQueueSchema = z.object({
+    params:z.object({
+        id:z.string()
+    }),
+    body:z.object({
+        from: z.string(),
+        to: z.string(),
+    })
+})
+
+//Zod Schema types for backend validtation.
+type initSchemaType = z.infer<typeof initSchema>
+type sendMailViaQueueSchemaType = z.infer<typeof sendMailViaQueueSchema>
 
 const sendMailQueue = new Queue("email-queue", {
     connection: {
@@ -15,7 +37,7 @@ const sendMailQueue = new Queue("email-queue", {
     },
 });
 
-async function init(body: any) {
+async function init(body: initSchemaType) {
     console.log(body)
     const res = await sendMailQueue.add("Email to the selected User", {
         from: body.from,
@@ -23,7 +45,7 @@ async function init(body: any) {
         id: body.id,
         // subject: "This is subject",
         // body: "hiiiiii",
-    }, {removeOnComplete:true});
+    }, { removeOnComplete: true });
     console.log("Job added to queue", res.id);
 }
 
@@ -262,26 +284,26 @@ const parseAndSendMail = async (data1: any) => {
 }
 
 
-const sendMailViaQueue = async (req: any, res: any) => {
+const sendMailViaQueue = async (req: sendMailViaQueueSchemaType, res: any) => {
     try {
         const { id } = req.params;
         const { from, to } = req.body;
         init({ from, to, id })
         // await sendMailQueue.add("Sending email to the queue", { from, to, id });
         // // res.send('Mail processing has been queued.');
-        
+
     } catch (error: any) {
         console.log("Error in sending mail via queue", error.message)
     }
     res.send("Mail processing has been queued.")
 }
 
-const sendMultipleEmails = async (req: any, res: any) => {
+const sendMultipleEmails = async (req: sendMailViaQueueSchemaType, res: any) => {
     try {
-        const {id} = req.params;
-        const {from,to} = req.body
-        for(let i = 0; i < to.length; i++){
-            await init({from,to:to[i],id})
+        const { id } = req.params;
+        const { from, to } = req.body
+        for (let i = 0; i < to.length; i++) {
+            await init({ from, to: to[i], id })
         }
     } catch (error: any) {
         console.log("Error in sending multiple emails", error.message)
@@ -289,6 +311,6 @@ const sendMultipleEmails = async (req: any, res: any) => {
 
 }
 
-module.exports = { getUser, sendMail, getDrafts, readMail, getMails, parseAndSendMail, sendMailViaQueue,sendMultipleEmails }
+module.exports = { getUser, sendMail, getDrafts, readMail, getMails, parseAndSendMail, sendMailViaQueue, sendMultipleEmails }
 
 export { }
