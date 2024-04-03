@@ -1,4 +1,4 @@
-# ReachInbox Assignment
+# ReachInbox
  
 ## Server
 This is a server application built with Node.js and Express. It uses various packages such as `nodemailer` for sending emails, `openai` for AI functionalities, `googleapis` for Google APIs, and `axios` for HTTP requests and `bullMQ` to process queues.
